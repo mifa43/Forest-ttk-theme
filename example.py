@@ -6,9 +6,25 @@ License: MIT license
 Source: https://github.com/rdbende/ttk-widget-factory
 """
 
-
 import tkinter as tk
 from tkinter import ttk
+import sys
+import os
+
+# Dodajte putanju do glavnog direktorijuma
+module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(module_path)
+
+# Sada možete importovati modul
+from main import modify_HTML
+# Dobijanje apsolutne putanje do direktorijuma u kojem se nalazi trenutni fajl
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Formiranje putanje do datoteke "forest-dark.tcl" u istom direktorijumu
+tcl_file_path = os.path.join(current_directory, "forest-dark.tcl")
+
+
+html_path = '/home/mifa43/Desktop/CAS/htmlStructure/jubilej-14.html'
 
 root = tk.Tk()
 root.title("Forest")
@@ -26,14 +42,38 @@ root.rowconfigure(index=2, weight=1)
 style = ttk.Style(root)
 
 # Import the tcl file
-root.tk.call("source", "forest-dark.tcl")
-
+# Učitavanje datoteke "forest-dark.tcl"
+root.tk.call("source", tcl_file_path)
 # Set the theme with the theme_use method
 style.theme_use("forest-dark")
 
 # Create lists for the Comboboxes
 option_menu_list = ["", "OptionMenu", "Option 1", "Option 2"]
-combo_list = ["Combobox", "Editable item 1", "Editable item 2"]
+combo_list = [
+    "None",
+    "ZEMUN",
+    "NOVI BEOGRAD",
+    "STARI GRAD",
+    "ZVEZDARA",
+    "VRAČAR",
+    "PALILULA",
+    "ŽELEZNIK",
+    "ŽARKOVO",
+    "VIDIKOVAC",
+    "RAKOVICA",
+    "ČUKARICA",
+    "CERAK",
+    "BANOVO BRDO",
+    "SAVSKI VENAC",
+    "BORČA",
+    "KALUĐERICA",
+    "SREMČICA",
+    "UGRINOVCI",
+    "VELIKA MOŠTANICA",
+    "VOŽDOVAC",
+    "VOŽDOVAC-RAKOVICA",
+    "VOŽDOVAC-BARAJEVO"
+]
 readonly_combo_list = ["Readonly combobox", "Item 1", "Item 2"]
 
 # Create control variables
@@ -86,14 +126,26 @@ widgets_frame = ttk.Frame(root, padding=(0, 0, 0, 10))
 widgets_frame.grid(row=0, column=1, padx=10, pady=(30, 10), sticky="nsew", rowspan=3)
 widgets_frame.columnconfigure(index=0, weight=1)
 
+
+def retrieve_text():
+    user_range = spinbox.get()
+    grad_param = entry.get()
+    kampanja_param = combobox.get()
+    print(user_range, grad_param, kampanja_param)
+    if kampanja_param == "None":
+        kampanja_param = ""
+
+    modify_HTML(html_path, user_range, grad_param, kampanja_param)
+
+
 # Entry
 entry = ttk.Entry(widgets_frame)
-entry.insert(0, "Entry")
+entry.insert(0, "Unesi naziv grada")
 entry.grid(row=0, column=0, padx=5, pady=(0, 10), sticky="ew")
 
 # Spinbox
 spinbox = ttk.Spinbox(widgets_frame, from_=0, to=100)
-spinbox.insert(0, "Spinbox")
+spinbox.insert(0, "Unesi broj dokumenta")
 spinbox.grid(row=1, column=0, padx=5, pady=10, sticky="ew")
 
 # Combobox
@@ -101,41 +153,25 @@ combobox = ttk.Combobox(widgets_frame, values=combo_list)
 combobox.current(0)
 combobox.grid(row=2, column=0, padx=5, pady=10,  sticky="ew")
 
-# Read-only combobox
-readonly_combo = ttk.Combobox(widgets_frame, state="readonly", values=readonly_combo_list)
-readonly_combo.current(0)
-readonly_combo.grid(row=3, column=0, padx=5, pady=10,  sticky="ew")
-
-# Menu for the Menubutton
-menu = tk.Menu(widgets_frame)
-menu.add_command(label="Menu item 1")
-menu.add_command(label="Menu item 2")
-menu.add_separator()
-menu.add_command(label="Menu item 3")
-menu.add_command(label="Menu item 4")
-
-# Menubutton
-menubutton = ttk.Menubutton(widgets_frame, text="Menubutton", menu=menu, direction="below")
-menubutton.grid(row=4, column=0, padx=5, pady=10, sticky="nsew")
-
-# OptionMenu
-optionmenu = ttk.OptionMenu(widgets_frame, e, *option_menu_list)
-optionmenu.grid(row=5, column=0, padx=5, pady=10, sticky="nsew")
+def clear_text():
+    entry.delete(0, tk.END)
+    spinbox.delete(0, tk.END)
+    combobox.delete(0, tk.END)
 
 # Button
-button = ttk.Button(widgets_frame, text="Button")
+button = ttk.Button(widgets_frame, text="Ponisti unose", command=clear_text)
 button.grid(row=6, column=0, padx=5, pady=10, sticky="nsew")
 
 # Accentbutton
-accentbutton = ttk.Button(widgets_frame, text="Accentbutton", style="Accent.TButton")
+accentbutton = ttk.Button(widgets_frame, text="Generisi", style="Accent.TButton", command=retrieve_text)
 accentbutton.grid(row=7, column=0, padx=5, pady=10, sticky="nsew")
 
 # Togglebutton
-button = ttk.Checkbutton(widgets_frame, text="Togglebutton", style="ToggleButton")
+button = ttk.Checkbutton(widgets_frame, text="Prikazi podatke", style="ToggleButton")
 button.grid(row=8, column=0, padx=5, pady=10, sticky="nsew")
 
 # Switch
-switch = ttk.Checkbutton(widgets_frame, text="Switch", style="Switch")
+switch = ttk.Checkbutton(widgets_frame, text="Da, istampan", style="Switch")
 switch.grid(row=9, column=0, padx=5, pady=10, sticky="nsew")
 
 # Panedwindow
